@@ -19,9 +19,9 @@
 </head>
 <body>
     <div class="container my-5">
-                        <button id="export-excel" class="btn btn-primary">
-                            <i class="fas fa-file-excel me-1"></i> Export Excel
-                        </button>
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4">
                     <i class="fas fa-ship me-3"></i>SeaJets Scraper
                 </h1>
                 <p class="lead text-muted">Results for Piraeus to Milos Route</p>
@@ -33,15 +33,11 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <h2>Scraped Data</h2>
                     <div>
-                    <div>
                         <a href="/" class="btn btn-outline-secondary me-2">
                             <i class="fas fa-redo me-1"></i> New Search
                         </a>
                         <button id="export-csv" class="btn btn-success me-2">
                             <i class="fas fa-file-csv me-1"></i> Export CSV
-                        </button>
-                        <button id="export-excel" class="btn btn-primary">
-                            <i class="fas fa-file-excel me-1"></i> Export Excel
                         </button>
                         <button id="export-excel" class="btn btn-primary">
                             <i class="fas fa-file-excel me-1"></i> Export Excel
@@ -93,14 +89,13 @@
                                             {% endif %}
                                         </td>
                                     </tr>
-                                    </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         {% else %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>No itineraries found for the selected date range.
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>No itineraries found for the selected date range.
                         </div>
                         {% endif %}
                     </div>
@@ -108,13 +103,13 @@
             </div>
         </div>
         
-        <!-- Seats Table -->
-        <div class="row">
+        <!-- Seat Availability Table -->
+        <div class="row mb-5">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-info bg-opacity-25">
+                    <div class="card-header bg-primary bg-opacity-25">
                         <h5 class="mb-0">
-                            <i class="fas fa-chair me-2"></i>Available Seats
+                            <i class="fas fa-chair me-2"></i>Seat Availability
                         </h5>
                     </div>
                     <div class="card-body">
@@ -125,9 +120,11 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Vessel</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
+                                        <th>Departure Time</th>
+                                        <th>Seat Type</th>
                                         <th>Available Seats</th>
+                                        <th>Total Seats</th>
+                                        <th>Percentage Full</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -135,17 +132,31 @@
                                     <tr>
                                         <td>{{ seat.Date }}</td>
                                         <td>{{ seat.Vessel }}</td>
-                                        <td>{{ seat.Category }}</td>
-                                        <td>{{ seat.Price }}</td>
+                                        <td>{{ seat["Departure Time"] }}</td>
+                                        <td>{{ seat["Seat Type"] }}</td>
                                         <td>{{ seat["Available Seats"] }}</td>
+                                        <td>{{ seat["Total Seats"] }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                {% set percentage = ((seat["Total Seats"] - seat["Available Seats"]) / seat["Total Seats"] * 100)|round|int %}
+                                                <div class="progress-bar {% if percentage > 90 %}bg-danger{% elif percentage > 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ percentage }}%;" 
+                                                     aria-valuenow="{{ percentage }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         {% else %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>No seat availability data found for the selected date range.
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>No seat availability data found for the selected date range.
                         </div>
                         {% endif %}
                     </div>
@@ -154,19 +165,20 @@
         </div>
     </div>
     
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- jQuery (required for DataTables) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-    <!-- DataTables -->
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     
+    <!-- Custom JS -->
     <script>
-        // Initialize DataTables
         $(document).ready(function() {
+            // Initialize DataTables
             if ($('#itineraries-table tbody tr').length > 0) {
                 $('#itineraries-table').DataTable({
                     responsive: true,
@@ -211,11 +223,6 @@
                             document.body.removeChild(seatsLink);
                         }
                     },
-                    error: function(xhr) {
-                        alert('Error exporting CSV: ' + xhr.responseJSON.error);
-                            document.body.removeChild(seatsLink);
-                        }
-                    },
                     error: function(error) {
                         console.error("Error exporting CSV:", error);
                         alert("Error exporting CSV. Please try again.");
@@ -252,8 +259,6 @@
                         alert("Error exporting Excel. Please try again.");
                     }
                 });
-            });
-
             });
         });
     </script>
