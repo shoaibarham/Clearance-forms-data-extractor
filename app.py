@@ -76,26 +76,34 @@ def results():
 @app.route('/export_csv', methods=['POST'])
 def export_csv():
     """Export the scraped data as CSV and Excel files"""
+    logger.debug("Export request received")
     if 'results' not in session:
+        logger.error("No results found in session")
         return jsonify({'error': 'No results found'}), 400
     
     try:
+        logger.debug("Loading results from session")
         results = json.loads(session['results'])
         
         # Convert to DataFrames
         itineraries_df = pd.DataFrame(results['itineraries'])
         seats_df = pd.DataFrame(results['seats'])
         
+        logger.debug(f"Data loaded: {len(itineraries_df)} itineraries, {len(seats_df)} seat records")
+        
         # Get current date for filename
         current_date = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename_prefix = f"seajets_scrape_{current_date}"
         
         # Create CSV files
+        logger.debug("Converting to CSV")
         itineraries_csv = itineraries_df.to_csv(index=False)
         seats_csv = seats_df.to_csv(index=False)
         
         # Create Excel file with multiple sheets
+        logger.debug("Creating Excel file")
         excel_buffer = io.BytesIO()
+        
         with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
             # Write the DataFrames to Excel
             itineraries_df.to_excel(writer, sheet_name='Itineraries', index=False)
@@ -152,13 +160,16 @@ def export_csv():
         excel_data = excel_buffer.read()
         excel_base64 = base64.b64encode(excel_data).decode('utf-8')
         
-        return jsonify({
+        logger.debug("Sending export response")
+        response_data = {
             'status': 'success',
             'itineraries_csv': itineraries_csv,
             'seats_csv': seats_csv,
             'excel_data': excel_base64,
             'filename_prefix': filename_prefix
-        })
+        }
+        
+        return jsonify(response_data)
     except Exception as e:
         logger.error(f"Error exporting data: {str(e)}")
         logger.error(traceback.format_exc())
