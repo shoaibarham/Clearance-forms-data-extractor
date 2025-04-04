@@ -1,0 +1,85 @@
+/* Custom styling for SeaJets Scraper */
+
+/* Add some spacing to the form elements */
+.form-label {
+    font-weight: 500;
+}
+
+/* Style the RUN button */
+#run-btn {
+    transition: all 0.3s ease;
+}
+
+#run-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Status badges */
+.badge {
+    font-size: 0.85em;
+    padding: 0.35em 0.65em;
+}
+
+/* Improve card appearance */
+.card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Progress bar styling */
+.progress {
+    height: 0.6rem;
+    border-radius: 1rem;
+}
+
+/* Animation for the ship icon */
+@keyframes rock {
+    0% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+    100% { transform: rotate(-5deg); }
+}
+
+.fa-ship {
+    display: inline-block;
+    animation: rock 3s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+/* Make sure datatables pagination matches the bootstrap theme */
+.page-link {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+/* Add responsive adjustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeaJets Scraper</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Flatpickr for date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4">
+                    <i class="fas fa-ship me-3"></i>SeaJets Scraper
+                </h1>
+                <p class="lead text-muted">Extract itineraries and seat availability for Piraeus to Milos routes</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Set Date Range</h5>
+                        
+                        <form id="scraper-form">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="start-date" class="form-label">Start Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        <input type="text" class="form-control" id="start-date" placeholder="DD/MM/YYYY" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="end-date" class="form-label">End Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        <input type="text" class="form-control" id="end-date" placeholder="DD/MM/YYYY" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mb-4" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                This process will navigate through the SeaJets website and collect data for the Piraeus to Milos route.
+                                It may take several minutes depending on the date range selected.
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" id="run-btn" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-play me-2"></i>RUN
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loading-indicator" class="row mt-4 d-none">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="card-title">Scraping in progress...</h5>
+                        <p class="card-text text-muted">This may take several minutes. Please do not close this window.</p>
+                        <div class="progress">
+                            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <p id="progress-status" class="mt-2 small text-muted">Initializing...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="error-container" class="row mt-4 d-none">
+            <div class="col-lg-8 mx-auto">
+                <div class="alert alert-danger" role="alert">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>Error</h5>
+                    <p id="error-message">An error occurred during the scraping process.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
