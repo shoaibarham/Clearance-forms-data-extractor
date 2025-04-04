@@ -63,7 +63,6 @@
                                         <th>Date</th>
                                         <th>Vessel</th>
                                         <th>Departure Time</th>
-                                        <th>Price</th>
                                         <th>Arrival Time</th>
                                         <th>Duration</th>
                                         <th>Price</th>
@@ -75,11 +74,10 @@
                                     <tr>
                                         <td>{{ itinerary.Date }}</td>
                                         <td>{{ itinerary.Vessel }}</td>
-                                        <td>{{ itinerary.Price }}</td>
-                                        <td>{{ itinerary['Departure Time'] }}</td>
-                                        <td>{{ itinerary['Arrival Time'] }}</td>
+                                        <td>{{ itinerary["Departure Time"] }}</td>
+                                        <td>{{ itinerary["Arrival Time"] }}</td>
                                         <td>{{ itinerary.Duration }}</td>
-                                        <td>
+                                        <td>{{ itinerary.Price }}</td>
                                             {% if itinerary.Available %}
                                             <span class="badge bg-success">Available</span>
                                             {% else %}
@@ -127,10 +125,10 @@
                                     {% for seat in seats %}
                                     <tr>
                                         <td>{{ seat.Date }}</td>
-                                        <td>{{ seat.Price }}</td>
                                         <td>{{ seat.Vessel }}</td>
                                         <td>{{ seat.Category }}</td>
-                                        <td>{{ seat['Available Seats'] }}</td>
+                                        <td>{{ seat.Price }}</td>
+                                        <td>{{ seat["Available Seats"] }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
