@@ -63,8 +63,10 @@
                                         <th>Date</th>
                                         <th>Vessel</th>
                                         <th>Departure Time</th>
+                                        <th>Price</th>
                                         <th>Arrival Time</th>
                                         <th>Duration</th>
+                                        <th>Price</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -73,6 +75,7 @@
                                     <tr>
                                         <td>{{ itinerary.Date }}</td>
                                         <td>{{ itinerary.Vessel }}</td>
+                                        <td>{{ itinerary.Price }}</td>
                                         <td>{{ itinerary['Departure Time'] }}</td>
                                         <td>{{ itinerary['Arrival Time'] }}</td>
                                         <td>{{ itinerary.Duration }}</td>
@@ -116,6 +119,7 @@
                                         <th>Date</th>
                                         <th>Vessel</th>
                                         <th>Category</th>
+                                        <th>Price</th>
                                         <th>Available Seats</th>
                                     </tr>
                                 </thead>
@@ -123,6 +127,7 @@
                                     {% for seat in seats %}
                                     <tr>
                                         <td>{{ seat.Date }}</td>
+                                        <td>{{ seat.Price }}</td>
                                         <td>{{ seat.Vessel }}</td>
                                         <td>{{ seat.Category }}</td>
                                         <td>{{ seat['Available Seats'] }}</td>

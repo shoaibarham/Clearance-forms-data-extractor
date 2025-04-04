@@ -110,13 +110,22 @@ class SeajetsScraper:
             # Determine if itinerary is available (most are)
             is_available = True if date_obj > datetime.now() else False
             
-            # Create itinerary record
+            # Create itinerary record with price
+            base_price = 45 + (i * 15)  # Base price varies by time of day
+            # Weekend prices are higher
+            if date_obj.weekday() >= 5:  # 5 is Saturday, 6 is Sunday
+                base_price += 20
+            # Peak season (summer) prices are higher
+            if date_obj.month >= 6 and date_obj.month <= 9:
+                base_price += 30
+                
             itinerary_data = {
                 'Date': date_str,
                 'Vessel': vessels[i % len(vessels)],
                 'Departure Time': departure_time,
                 'Arrival Time': arrival_time,
                 'Duration': duration,
+                'Price': f"€{base_price}",
                 'Available': is_available
             }
             
@@ -130,14 +139,18 @@ class SeajetsScraper:
     def generate_sample_seat_data(self, date_str, vessel_name):
         """Generate sample seat availability data"""
         seat_categories = [
-            {"name": "Economy", "total": 100},
-            {"name": "Business", "total": 50},
-            {"name": "VIP", "total": 20},
-            {"name": "Premium", "total": 10}
+            {"name": "Economy", "total": 100, "price": 45},
+            {"name": "Business", "total": 50, "price": 75},
+            {"name": "VIP", "total": 20, "price": 120},
+            {"name": "Premium", "total": 10, "price": 180}
         ]
         
         date_obj = datetime.strptime(date_str, "%d/%m/%Y")
         days_until = (date_obj - datetime.now()).days
+        
+        # Price multipliers based on date
+        seasonal_multiplier = 1.5 if (date_obj.month >= 6 and date_obj.month <= 9) else 1.0
+        weekend_multiplier = 1.2 if date_obj.weekday() >= 5 else 1.0
         
         for category in seat_categories:
             # Calculate available seats based on how far in the future
@@ -145,10 +158,14 @@ class SeajetsScraper:
             available_pct = min(0.95, max(0.1, days_until / 30)) 
             available = int(category["total"] * available_pct)
             
+            # Apply multipliers to base price
+            adjusted_price = category["price"] * seasonal_multiplier * weekend_multiplier
+            
             seat_data = {
                 'Date': date_str,
                 'Vessel': vessel_name,
                 'Category': category["name"],
+                'Price': f"€{int(adjusted_price)}",
                 'Available Seats': f"{available}/{category['total']}"
             }
             
