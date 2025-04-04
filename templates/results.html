@@ -73,8 +73,8 @@
                                     <tr>
                                         <td>{{ itinerary.Date }}</td>
                                         <td>{{ itinerary.Vessel }}</td>
-                                        <td>{{ itinerary.Departure_Time }}</td>
-                                        <td>{{ itinerary.Arrival_Time }}</td>
+                                        <td>{{ itinerary['Departure Time'] }}</td>
+                                        <td>{{ itinerary['Arrival Time'] }}</td>
                                         <td>{{ itinerary.Duration }}</td>
                                         <td>
                                             {% if itinerary.Available %}
@@ -125,7 +125,7 @@
                                         <td>{{ seat.Date }}</td>
                                         <td>{{ seat.Vessel }}</td>
                                         <td>{{ seat.Category }}</td>
-                                        <td>{{ seat.Available_Seats }}</td>
+                                        <td>{{ seat['Available Seats'] }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
