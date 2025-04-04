@@ -1,11 +1,15 @@
 import os
 import logging
+import io
+import base64
 from flask import Flask, render_template, request, jsonify, session
 from bs_scraper import SeajetsScraper  # Using the new scraper
 import pandas as pd
 import json
 import traceback
 from datetime import datetime
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -71,7 +75,7 @@ def results():
 
 @app.route('/export_csv', methods=['POST'])
 def export_csv():
-    """Export the scraped data as CSV files"""
+    """Export the scraped data as CSV and Excel files"""
     if 'results' not in session:
         return jsonify({'error': 'No results found'}), 400
     
@@ -84,17 +88,78 @@ def export_csv():
         
         # Get current date for filename
         current_date = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename_prefix = f"seajets_scrape_{current_date}"
         
         # Create CSV files
         itineraries_csv = itineraries_df.to_csv(index=False)
         seats_csv = seats_df.to_csv(index=False)
         
+        # Create Excel file with multiple sheets
+        excel_buffer = io.BytesIO()
+        with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+            # Write the DataFrames to Excel
+            itineraries_df.to_excel(writer, sheet_name='Itineraries', index=False)
+            seats_df.to_excel(writer, sheet_name='Seat Availability', index=False)
+            
+            # Get the workbook and apply styling
+            workbook = writer.book
+            
+            # Style the Itineraries sheet
+            itineraries_sheet = workbook['Itineraries']
+            header_fill = PatternFill(start_color="0052CC", end_color="0052CC", fill_type="solid")
+            header_font = Font(color="FFFFFF", bold=True)
+            
+            for cell in itineraries_sheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = Alignment(horizontal='center')
+            
+            # Auto-adjust column widths
+            for column in itineraries_sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                itineraries_sheet.column_dimensions[column_letter].width = adjusted_width
+            
+            # Style the Seats sheet
+            seats_sheet = workbook['Seat Availability']
+            for cell in seats_sheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = Alignment(horizontal='center')
+            
+            # Auto-adjust column widths
+            for column in seats_sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                seats_sheet.column_dimensions[column_letter].width = adjusted_width
+        
+        # Get the Excel bytes
+        excel_buffer.seek(0)
+        excel_data = excel_buffer.read()
+        excel_base64 = base64.b64encode(excel_data).decode('utf-8')
+        
         return jsonify({
             'status': 'success',
             'itineraries_csv': itineraries_csv,
             'seats_csv': seats_csv,
-            'filename_prefix': f"seajets_scrape_{current_date}"
+            'excel_data': excel_base64,
+            'filename_prefix': filename_prefix
         })
     except Exception as e:
-        logger.error(f"Error exporting CSV: {str(e)}")
+        logger.error(f"Error exporting data: {str(e)}")
+        logger.error(traceback.format_exc())
         return jsonify({'error': str(e)}), 500

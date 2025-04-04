@@ -33,11 +33,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <h2>Scraped Data</h2>
                     <div>
+                    <div>
                         <a href="/" class="btn btn-outline-secondary me-2">
                             <i class="fas fa-redo me-1"></i> New Search
                         </a>
-                        <button id="export-csv" class="btn btn-success">
+                        <button id="export-csv" class="btn btn-success me-2">
                             <i class="fas fa-file-csv me-1"></i> Export CSV
+                        </button>
+                        <button id="export-excel" class="btn btn-primary">
+                            <i class="fas fa-file-excel me-1"></i> Export Excel
+                        </button>
+                        <button id="export-excel" class="btn btn-primary">
+                            <i class="fas fa-file-excel me-1"></i> Export Excel
                         </button>
                     </div>
                 </div>
@@ -206,8 +213,47 @@
                     },
                     error: function(xhr) {
                         alert('Error exporting CSV: ' + xhr.responseJSON.error);
+                            document.body.removeChild(seatsLink);
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error exporting CSV:", error);
+                        alert("Error exporting CSV. Please try again.");
                     }
                 });
+            });
+            
+            // Export Excel functionality
+            $('#export-excel').on('click', function() {
+                $.ajax({
+                    url: '/export_csv',
+                    method: 'POST',
+                    success: function(response) {
+                        // Create download link for Excel file
+                        if (response.excel_data) {
+                            const byteCharacters = atob(response.excel_data);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const excelBlob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                            const excelUrl = window.URL.createObjectURL(excelBlob);
+                            const excelLink = document.createElement('a');
+                            excelLink.href = excelUrl;
+                            excelLink.setAttribute('download', `${response.filename_prefix}.xlsx`);
+                            document.body.appendChild(excelLink);
+                            excelLink.click();
+                            document.body.removeChild(excelLink);
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error exporting Excel:", error);
+                        alert("Error exporting Excel. Please try again.");
+                    }
+                });
+            });
+
             });
         });
     </script>
