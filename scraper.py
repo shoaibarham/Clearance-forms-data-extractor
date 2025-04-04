@@ -35,6 +35,10 @@ class SeajetsScraper:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        
+        # Add options for Replit environment
+        chrome_options.binary_location = "/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium"
         
         # Create and return the webdriver
         driver = webdriver.Chrome(options=chrome_options)

@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session
-from scraper import SeajetsScraper
+from bs_scraper import SeajetsScraper  # Using the new scraper
 import pandas as pd
 import json
 import traceback
